@@ -1,4 +1,5 @@
 const prisma = require("../models");
+const { io } = require("../../server");
 const { createTaskValidation, updateTaskValidation } = require("../validators");
 
 // Create a task
@@ -96,6 +97,8 @@ exports.updateTask = async (req, res) => {
         userId: assignedTo,
       },
     });
+
+    io.to(`team_${task.teamId}`).emit("taskUpdated", updatedTask);
 
     res.json(updatedTask);
   } catch (err) {
